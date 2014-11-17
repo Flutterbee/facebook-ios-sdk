@@ -323,10 +323,16 @@ NSString *const FBPersistedAnonymousIDKey   = @"anon_id";
     
     // Only access the IDFA (advertisingIdentifier) if the app advertises.
     if (accessAdvertisingID) {
-        Class ASIdentifierManagerClass = fbdfl_ASIdentifierManagerClass();
-        if ([ASIdentifierManagerClass class]) {
-            ASIdentifierManager *manager = [ASIdentifierManagerClass sharedManager];
-            result = [[manager advertisingIdentifier] UUIDString];
+        Class ASIdentifierManagerClass = NSClassFromString(@"ASIdentifierManager");
+        if (ASIdentifierManagerClass) {
+            SEL sharedManagerSelector = NSSelectorFromString(@"sharedManager");
+            id sharedManager = ((id (*)(id, SEL))[ASIdentifierManagerClass methodForSelector:sharedManagerSelector])(ASIdentifierManagerClass, sharedManagerSelector);
+            SEL advertisingIdentifierSelector = NSSelectorFromString(@"advertisingIdentifier");
+            NSUUID *uuid = ((NSUUID* (*)(id, SEL))[sharedManager methodForSelector:advertisingIdentifierSelector])(sharedManager, advertisingIdentifierSelector);
+            result = [uuid UUIDString];
+        }
+        else if (NSClassFromString(@"UIDevice")) {
+            result = [[UIDevice currentDevice].identifierForVendor UUIDString];
         }
     }
     
