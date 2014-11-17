@@ -27,7 +27,6 @@
 #import "FBDynamicFrameworkLoader.h"
 #import "FBSettings+Internal.h"
 
-#import <AdSupport/AdSupport.h>
 #include <mach-o/dyld.h>
 #include <sys/time.h>
 
